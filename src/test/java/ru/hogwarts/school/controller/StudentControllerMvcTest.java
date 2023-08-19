@@ -13,7 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.AvatarRepository;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.service.AvatarService;
+import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.ArrayList;
@@ -29,10 +33,17 @@ public class StudentControllerMvcTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private FacultyRepository facultyRepository;
+    @MockBean
     private StudentRepository studentRepository;
-
+    @MockBean
+    private AvatarRepository avatarRepository;
     @SpyBean
     private StudentService studentService;
+    @SpyBean
+    private FacultyService facultyService;
+    @SpyBean
+    private AvatarService avatarService;
 
     @InjectMocks
     private StudentController studentController;

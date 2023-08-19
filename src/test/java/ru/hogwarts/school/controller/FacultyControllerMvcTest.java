@@ -13,8 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.service.AvatarService;
 import ru.hogwarts.school.service.FacultyService;
+import ru.hogwarts.school.service.StudentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +34,16 @@ public class FacultyControllerMvcTest {
 
     @MockBean
     private FacultyRepository facultyRepository;
+    @MockBean
+    private StudentRepository studentRepository;
+    @MockBean
+    private AvatarRepository avatarRepository;
+    @SpyBean
+    private StudentService studentService;
     @SpyBean
     private FacultyService facultyService;
+    @SpyBean
+    private AvatarService avatarService;
     @InjectMocks
     private FacultyController facultyController;
 
@@ -116,9 +128,13 @@ public class FacultyControllerMvcTest {
         Mockito.verify(facultyService, Mockito.times(1)).delFaculty(Mockito.eq(id));
     }
 
+
+    //Понятия не имею почему этот тест падает, ответ приходит со статусом 200, но тело ответа пустое. В контролере и сервисе вроде все хорошо
+    //Мок вроде тоже правильно прописан, но в теле ответа просто стоит [], как будто пустой json, хотя в контроллере прописано что если список пустой
+    //то надо возвращать 404
     @Test
     public void testGetFacultyByNameOrColor() throws Exception{
-        Long id = (long)1;
+        Long id = 1L;
         String name = "TestFaculty";
         String color = "TestColor";
 
@@ -128,22 +144,22 @@ public class FacultyControllerMvcTest {
         faculty.setColor(color);
         faculty.setId(id);
         facultyList.add(faculty);
-        Mockito.when(facultyRepository.findByNameOrColorIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(facultyList);
 
+        Mockito.when(facultyRepository.findByNameOrColorIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(facultyList);
         mockMvc.perform(MockMvcRequestBuilders.get("/faculty")
                 .param("name", name)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.color").value(color));
+                .andExpect(jsonPath("$[0].id").value(id))
+                .andExpect(jsonPath("$[0].name").value(name))
+                .andExpect(jsonPath("$[0].color").value(color));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/faculty")
                 .param("color", color)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.color").value(color));
+                .andExpect(jsonPath("$[0].id").value(id))
+                .andExpect(jsonPath("$[0].name").value(name))
+                .andExpect(jsonPath("$[0].color").value(color));
     }
 }
