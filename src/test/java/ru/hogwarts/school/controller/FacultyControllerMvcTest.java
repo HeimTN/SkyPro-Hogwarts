@@ -20,9 +20,7 @@ import ru.hogwarts.school.service.AvatarService;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -129,9 +127,6 @@ public class FacultyControllerMvcTest {
     }
 
 
-    //Понятия не имею почему этот тест падает, ответ приходит со статусом 200, но тело ответа пустое. В контролере и сервисе вроде все хорошо
-    //Мок вроде тоже правильно прописан, но в теле ответа просто стоит [], как будто пустой json, хотя в контроллере прописано что если список пустой
-    //то надо возвращать 404
     @Test
     public void testGetFacultyByNameOrColor() throws Exception{
         Long id = 1L;
@@ -147,7 +142,7 @@ public class FacultyControllerMvcTest {
 
         Mockito.when(facultyRepository.findByNameOrColorIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(facultyList);
         mockMvc.perform(MockMvcRequestBuilders.get("/faculty")
-                .param("name", name)
+                .param("name", name).param("color", "")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(id))
@@ -155,7 +150,7 @@ public class FacultyControllerMvcTest {
                 .andExpect(jsonPath("$[0].color").value(color));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/faculty")
-                .param("color", color)
+                .param("color", color).param("name", "")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(id))
