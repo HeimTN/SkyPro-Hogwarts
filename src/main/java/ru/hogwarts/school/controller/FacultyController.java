@@ -29,7 +29,7 @@ public class FacultyController {
     @GetMapping("{id}/students")
     public ResponseEntity<Collection<Student>> getAllStudentInFaculty(@PathVariable long id){
         Collection<Student> result = facultyService.getAllStudentInFaculty(id);
-        if(result == null){
+        if(result.isEmpty()){
             ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
@@ -39,7 +39,7 @@ public class FacultyController {
     public ResponseEntity<Collection<Faculty>> filterColorFaculty(@RequestParam(required = false) String color,
                                                                   @RequestParam(required = false) String name){
         Collection<Faculty> result = facultyService.getFacultyByNameOrColor(name, color);
-        if(result == null){
+        if(result.isEmpty()){
             ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
