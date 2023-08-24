@@ -70,4 +70,11 @@ public class StudentController {
         studentService.delStudent(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/count")
+    public Integer countAllStudents(){return studentService.countAllStudent();}
+    @GetMapping("/avg-age")
+    public Integer avgAgeStudent(){return studentService.avgAgeStudent();}
+    @GetMapping("/last")
+    public Collection<Student> last5Student(){return studentService.last5Students();}
 }
