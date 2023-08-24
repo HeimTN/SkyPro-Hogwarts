@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("student")
@@ -54,5 +56,19 @@ public class AvatarController {
             response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
         }
+    }
+
+    @GetMapping("/avatars")
+    public ResponseEntity<List<byte[]>> avatars(@RequestParam Integer page, @RequestParam Integer size){
+        List<Avatar> avatars = avatarService.findAllAvatarPag(page, size);
+        List<byte[]> result = avatars.stream().map(Avatar::getData).toList();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(avatars.get(0).getMediaType()));
+        AtomicReference<Long> temp = new AtomicReference<>(0L);
+        avatars.forEach(a -> temp.set(temp.get() + a.getData().length));
+        headers.setContentLength(temp.get());
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(result);
     }
 }
