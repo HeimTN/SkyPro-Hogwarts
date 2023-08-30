@@ -1,0 +1,2 @@
+SELECT student.name, student.age, faculty.name FROM student JOIN faculty ON student.faculty_id = faculty.id;
+SELECT student.name, student.age, avatar.data FROM avatar JOIN student ON avatar.student_id = student.id;
