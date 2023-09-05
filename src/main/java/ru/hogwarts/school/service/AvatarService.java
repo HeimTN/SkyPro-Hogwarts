@@ -1,6 +1,8 @@
 package ru.hogwarts.school.service;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class AvatarService {
     private String avatarsDir;
     private StudentRepository studentRepository;
     private AvatarRepository avatarRepository;
+    private final Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     public AvatarService(StudentRepository studentRepository, AvatarRepository avatarRepository){
         this.studentRepository = studentRepository;
@@ -32,10 +35,13 @@ public class AvatarService {
     }
 
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException{
+        logger.debug("Method uploadAvatar: Find student by id: {}", studentId);
         Student student = studentRepository.findById(studentId).get();
+        logger.debug("Method uploadAvatar: Create filePath");
         Path filePath = Path.of(avatarsDir, student + "."+ getExtension(avatarFile.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
+        logger.debug("Method uploadAvatar: Start upload avatar");
         try(
                 InputStream is = avatarFile.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
@@ -44,7 +50,14 @@ public class AvatarService {
                 ){
             bis.transferTo(bos);
         }
-
+        catch (IOException e){
+            logger.error("Method uploadAvatar: Avatar not upload");
+            logger.error(e.toString());
+        }
+        finally {
+            logger.debug("Method uploadAvatar: Finished upload avatar");
+        }
+        logger.debug("Method uploadAvatar: Start create model Avatar and save to DB");
         Avatar avatar = findAvatar(studentId);
         avatar.setStudent(student);
         avatar.setFilePath(filePath.toString());
@@ -52,14 +65,20 @@ public class AvatarService {
         avatar.setMediaType(avatarFile.getContentType());
         avatar.setData(avatarFile.getBytes());
         avatarRepository.save(avatar);
+        logger.info("Avatar is upload and save in DB");
     }
-    public Avatar findAvatar(Long studentId){return avatarRepository.findByStudentId(studentId);}
+    public Avatar findAvatar(Long studentId){
+        logger.info("Find Avatar by student id: {}", studentId);
+        return avatarRepository.findByStudentId(studentId);
+    }
     private String getExtension(String fileName){
+        logger.debug("Method getExtension: Find extension by {}", fileName);
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
     public List<Avatar> findAllAvatarPag(Integer page, Integer size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
+        logger.info("Find all Avatar by page request: {}", pageRequest);
         return avatarRepository.findAll(pageRequest).getContent();
     }
 }
