@@ -77,4 +77,10 @@ public class StudentController {
     public Integer avgAgeStudent(){return studentService.avgAgeStudent();}
     @GetMapping("/last")
     public Collection<Student> last5Student(){return studentService.last5Students();}
+
+    @GetMapping("/{firstChar}")
+    public Collection<Student> firstCharStudent(@PathVariable char firstChar){return studentService.firstCharStudent(firstChar);}
+
+    @GetMapping("/avg-age-stream")
+    public Integer avgAgeStudentStream(){return studentService.avgAgeStudentStream();}
 }

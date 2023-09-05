@@ -64,4 +64,9 @@ public class FacultyController {
         facultyService.delFaculty(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/long-name")
+    public Faculty longNameByFaculty(){
+        return facultyService.longName();
+    }
 }

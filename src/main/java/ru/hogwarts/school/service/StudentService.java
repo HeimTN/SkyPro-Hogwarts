@@ -9,6 +9,8 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -67,5 +69,16 @@ public class StudentService {
     public Collection<Student> last5Students(){
         logger.info("Get last 5 Students");
         return studentRepository.last5Student();
+    }
+
+    //Решил попробовать сделать фильтр не только по 'А', а по любой букве
+    public Collection<Student> firstCharStudent(char firstChar){
+        List<Student> students = studentRepository.findAll();
+        String firstTemp = firstChar+"";
+        return students.stream().parallel().filter(s -> s.getName().startsWith(firstTemp.toUpperCase())).collect(Collectors.toList());
+    }
+
+    public Integer avgAgeStudentStream(){
+        return (int)Math.round(studentRepository.findAll().stream().parallel().mapToInt(Student::getAge).average().orElse(0));
     }
 }
