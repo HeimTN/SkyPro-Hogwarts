@@ -103,7 +103,7 @@ public class StudentService {
         List<Student> students = studentRepository.findAll().stream().limit(6).toList();
 
         syncOutPrintStudent(students.get(0));
-        syncOutPrintStudent(students.get(0));
+        syncOutPrintStudent(students.get(1));
        Thread thread1 = new Thread(() -> {
                 syncOutPrintStudent(students.get(2));
                 syncOutPrintStudent(students.get(3));
