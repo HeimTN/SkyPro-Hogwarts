@@ -71,7 +71,6 @@ public class StudentService {
         return studentRepository.last5Student();
     }
 
-    //Решил попробовать сделать фильтр не только по 'А', а по любой букве
     public Collection<Student> firstCharStudent(char firstChar){
         List<Student> students = studentRepository.findAll();
         String firstTemp = firstChar+"";
@@ -81,4 +80,43 @@ public class StudentService {
     public Integer avgAgeStudentStream(){
         return (int)Math.round(studentRepository.findAll().stream().parallel().mapToInt(Student::getAge).average().orElse(0));
     }
+
+    public void checkThread(){
+        List<Student> students = studentRepository.findAll().stream().limit(6).toList();
+
+        new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        }).start();
+
+        new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        }).start();
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+    }
+
+    public synchronized void checkSyncThread(){
+        List<Student> students = studentRepository.findAll().stream().limit(6).toList();
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+        new Thread(() -> {
+            synchronized (this){
+                System.out.println(students.get(2).getName());
+                System.out.println(students.get(3).getName());
+            }
+        }).start();
+        new Thread(() -> {
+            synchronized (this){
+                System.out.println(students.get(4).getName());
+                System.out.println(students.get(5).getName());
+            }
+        }).start();
+
+    }
+
 }
