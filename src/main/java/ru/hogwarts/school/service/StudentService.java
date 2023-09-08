@@ -105,16 +105,12 @@ public class StudentService {
         syncOutPrintStudent(students.get(0));
         syncOutPrintStudent(students.get(0));
        Thread thread1 = new Thread(() -> {
-            synchronized (this){
                 syncOutPrintStudent(students.get(2));
                 syncOutPrintStudent(students.get(3));
-            }
         });
         Thread thread2 = new Thread(() -> {
-            synchronized (this){
                 syncOutPrintStudent(students.get(4));
                 syncOutPrintStudent(students.get(5));
-            }
         });
 
         thread1.start();
