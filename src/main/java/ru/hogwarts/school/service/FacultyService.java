@@ -8,6 +8,7 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @Service
 public class FacultyService {
@@ -53,5 +54,10 @@ public class FacultyService {
     public Collection<Student> getAllStudentInFaculty(Long id){
         logger.info("Get all students in faculty by id: {}", id);
         return facultyRepository.findById(id).get().getStudents();
+    }
+
+    //Предполагается что факультетов должно быть немного в университете(в контексте хогвартса вродебы вообще 4), поэтому использую обычный стрим, а не паралельный
+    public Faculty longName(){
+        return facultyRepository.findAll().stream().max(Comparator.comparing(f -> f.getName().length())).get();
     }
 }
