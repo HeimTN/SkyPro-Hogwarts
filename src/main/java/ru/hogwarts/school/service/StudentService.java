@@ -99,24 +99,38 @@ public class StudentService {
 
     }
 
-    public synchronized void checkSyncThread(){
+    public void checkSyncThread(){
         List<Student> students = studentRepository.findAll().stream().limit(6).toList();
 
-        System.out.println(students.get(0).getName());
-        System.out.println(students.get(1).getName());
-        new Thread(() -> {
+        syncOutPrintStudent(students.get(0));
+        syncOutPrintStudent(students.get(0));
+       Thread thread1 = new Thread(() -> {
             synchronized (this){
-                System.out.println(students.get(2).getName());
-                System.out.println(students.get(3).getName());
+                syncOutPrintStudent(students.get(2));
+                syncOutPrintStudent(students.get(3));
             }
-        }).start();
-        new Thread(() -> {
+        });
+        Thread thread2 = new Thread(() -> {
             synchronized (this){
-                System.out.println(students.get(4).getName());
-                System.out.println(students.get(5).getName());
+                syncOutPrintStudent(students.get(4));
+                syncOutPrintStudent(students.get(5));
             }
-        }).start();
+        });
 
+        thread1.start();
+        thread2.start();
+
+        try{
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+
+    }
+
+    private synchronized void syncOutPrintStudent(Student student){
+        System.out.println(student.getName());
     }
 
 }
