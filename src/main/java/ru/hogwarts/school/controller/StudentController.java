@@ -83,4 +83,15 @@ public class StudentController {
 
     @GetMapping("/avg-age-stream")
     public Integer avgAgeStudentStream(){return studentService.avgAgeStudentStream();}
+
+    @GetMapping("/debug/1")
+    public ResponseEntity checkThread(){
+        studentService.checkThread();
+        return ResponseEntity.ok().build();
+    }
+    @GetMapping("/debug/2")
+    public ResponseEntity checkSyncThread(){
+        studentService.checkSyncThread();
+        return ResponseEntity.ok().build();
+    }
 }
